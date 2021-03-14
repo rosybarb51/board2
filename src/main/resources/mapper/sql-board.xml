@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="board.mapper.RestBoardMapper">
+<!-- <select>, <update>, <delete>, <insert> 는 sql 쿼리문을 구현 -->
+<!-- id : mapper에서 namespace로 지정한 interface에서 구현해야하는 메서드명을 뜻함 -->
+<!-- resultType : 구현한 메서드를 통하여 반환할 데이터 타입 -->
+	<select id="selectRestBoardList" resultType="board.dto.RestBoardDto">
+		<![CDATA[
+			SELECT
+				board_idx,
+				title,
+				hit_cnt,
+				DATE_FORMAT(created_datetime, '%Y.%m.%d %H:%i:%s') AS created_datetime
+			FROM
+				t_board
+			WHERE
+				deleted_yn = 'N'
+			ORDER BY board_idx DESC
+		]]>
+	</select>
+	
+	<!-- parameterType : sql 쿼리 사용 시 필요한 파라미터의 데이터 타입 설정 -->
+	<select id="selectRestBoardDetail" parameterType="int" resultType="board.dto.RestBoardDto">
+		<![CDATA[
+			SELECT
+				board_idx,
+				title,
+				contents,
+				hit_cnt,
+				DATE_FORMAT(created_datetime, '%Y.%m.%d %H:%i:%s') AS created_datetime,
+				created_id
+			FROM
+				t_board
+			WHERE
+				board_idx = #{boardIdx}
+			AND
+				deleted_yn = 'N'
+		]]>
+	</select>
+	
+	<update id="updateRestHitCount" parameterType="int">
+		<![CDATA[
+			UPDATE
+				t_board
+			SET
+				hit_cnt = hit_cnt + 1
+			WHERE
+				board_idx = #{boardIdx}
+		]]>
+	</update>
+	
+	<!-- xml에서 sql 쿼리문을 입력 시 반드시 실제 데이터 베이스의 컬럼명을 사용 -->
+	<!-- 사용자의 정보가 입력되는 부분은 dto 클래스에서 선언한 멤버변수명을 사용 -->
+	<!-- Mapper 파일에 매개변수로 넘어온 매개변수명을 사용해야 함 -->
+	<insert id="insertRestBoard" parameterType="board.dto.RestBoardDto">
+		<![CDATA[
+			INSERT INTO t_board 
+				(title, contents, created_id, created_datetime)
+			VALUES 
+				(#{title}, #{contents}, #{createdId}, NOW())
+		]]>
+	</insert>
+	
+	<!-- 게시글 수정하기 -->
+	<!-- 파라미터 타입은 보드메퍼에서 보낸 타입대로 적어준다. -->
+	<update id="updateRestBoard" parameterType="board.dto.RestBoardDto">
+		<![CDATA[
+			UPDATE 
+				t_board 
+			SET 
+				title = #{title}, contents = #{contents}
+			WHERE 
+				board_idx = #{boardIdx}
+		]]>
+	</update>
+	
+	<!-- 게시글 삭제하기 -->
+	<update id="deleteRestBoard" parameterType="int">
+		<![CDATA[
+			UPDATE
+				t_board
+			SET
+				deleted_yn = 'Y',
+				updated_datetime = NOW(),
+				updater_id = 'admin'
+			WHERE
+				board_idx = #{boardidx}
+		]]>
+	</update>
+</mapper>
