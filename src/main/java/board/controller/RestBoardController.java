@@ -81,6 +81,13 @@ public class RestBoardController {
 		return "redirect:/board";
 	}
 	
+//	REST API를 스프링부트에서 사용할 경우 기본 html은 form에서 지원하는 method가 get과 post 밖에 없기 때문에 오류가 발생함
+//	그래서 스프링에서 REST API를 지원하기 위해서 HiddenHttpMethodFilter 라는 클래스를 사용하여 GET, POST, PUT, DELETE 등의 여러 가지 Method를 지원하도록 하고 있음
+//	스프링부트2부터는 기본적으로 HiddenHttpMethodFilter가 등록되어 그냥 사용이 가능함.
+//	현재 스프링부트 2.4.3에서는 WebMvcConfigrationSupport 를 상속받아 @Bean을 설정해야 사용해야 정상적으로 사용이 가능함
+//	혹은 application.properties 파일에 spring.mvc.hiddenmethod.fileter.enable=true 를 설정하여 사용 ( 이 방법을 사용할 것임)
+	
+	
 //	@RequestMapping의 method가 PUT이기 때문에 DB 수정 기능을 사용함
 	@RequestMapping(value="/board/{boardIdx}", method=RequestMethod.PUT)
 	public String updateRestBoard(RestBoardDto data) throws Exception {

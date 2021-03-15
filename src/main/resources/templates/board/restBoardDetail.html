@@ -11,19 +11,29 @@
 
 <script>
 	$(document).ready(function() {
+		/* id가 boardIdx 인 input 태그의 value 값을 가져옴 */
+		/* input 태그의 th:value="${data.boardIdx}" 설정으로 컨트롤러에서 받아온 정보를 받아온다는 소리그것을 boardIdx에 넣었다. */
 		var boardIdx = $("#boardIdx").val();
 		
 		$("#btnList").on("click", function() {
 			location.href="/board/"
 		});
 		
+		/* 수정 버튼 클릭 시 */
 		$("#btnEdit").on("click", function() {
+			/* id 값이 method인 html(input) 태그의 value에 'put'을 입력 */
+			/* 스프링의 rest api 규칙에 의해서 RequestMethod.PUT으로 변경이 됨. */
 			$("#method").val("PUT");
+			/* $("#frm")[0] 은 id가 frm인 form 태그 중에서 첫 번째 form 태그를 선택한다는 뜻이다 */
+			/* 자바스크립트 form 태그를 검색해보면 해당 사용 방법이 나와있다.  */
+			/* form 태그는 여러 개 만들어서 데이터 날릴 수 있기 때문에 순서를 골라낼 수 있음. */
 			var frm = $("#frm")[0];
+			/* form 태그의 action 속성에 '/board/boardIdx' 주소를 설정 */
 			frm.action = "/board/" + boardIdx;
-			frm.submit();
+			frm.submit(); // 서버로 전송
 		});
 		
+		/* 아래는 위와 같으나 put을 delete로 바꿔서 이해하면 됨. */
 		$("#btnDel").on("click", function() {
 			$("#method").val("DELETE");
 			var frm = $("#frm")[0];
@@ -75,7 +85,8 @@
 						<textarea rows="5" cols="80" class="form-control" th:text="${data.contents}" id="contents" name="contents" placeholder="수정 시 내용을 입력하세요"></textarea>
 					</div>
 					<input type="hidden" id="boardIdx" name="boardIdx" th:value="${data.boardIdx}">
-					<input type="hidden" id="method" name="method"> 
+					<!-- 스프링4에서 rest api를 사용할 경우 input의 type이 hidden이고, name이 _method 이면 자바스크립트로 form 전송 시 RequestMethod의 get, post, put, delete로 변경할 수 있음 => _를 꼭 붙여줘야 함(규칙임) -->
+					<input type="hidden" id="method" name="_method"> 
 					<div class="row">
 						<div class="col-sm-4">
 							<button type="button" class="btn btn-primary btn-block" id="btnList">목록으로</button>
